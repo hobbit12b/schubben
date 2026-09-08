@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="267" viewBox="0 0 160 267">
+  <defs>
+    <linearGradient id="bend" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="rgb(128,128,128)"/>
+      <stop offset=".58" stop-color="rgb(128,128,128)"/>
+      <stop offset=".72" stop-color="rgb(128,160,128)"/>
+      <stop offset=".88" stop-color="rgb(128,245,128)"/>
+      <stop offset="1" stop-color="rgb(128,255,128)"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#bend)" d="M0 0h160v267H0z"/>
+</svg>

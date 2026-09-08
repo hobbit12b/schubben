@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#086a9f">
+  <title>Schubben geven</title>
+  <link rel="icon" href="assets/approved/rainbow.webp" type="image/webp">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/audio.js" defer></script>
+  <script src="js/game.js" defer></script>
+</head>
+<body>
+  <main class="stage" aria-label="Schubben geven">
+    <img class="background" src="assets/approved/background.webp" alt="" draggable="false">
+    <section id="settings" class="settings" aria-labelledby="title">
+      <div class="settings-art"><img src="assets/approved/rainbow.webp" alt="Regenboog" draggable="false"></div>
+      <form id="settings-form" class="settings-card">
+        <p class="eyebrow">GROEP 1–2 · RESULTATIEF TELLEN</p>
+        <h1 id="title">Schubben geven</h1>
+        <p class="intro">Help Regenboog zijn schubben te delen.</p>
+        <fieldset><legend>Aanbiedingsvorm</legend>
+          <div class="choices modes">
+            <label><input type="radio" name="mode" value="visual" checked><span>Visueel</span></label>
+            <label><input type="radio" name="mode" value="audio"><span>Auditief</span></label>
+            <label><input type="radio" name="mode" value="both"><span>Visueel + auditief</span></label>
+          </div>
+        </fieldset>
+        <fieldset><legend>Niveau</legend>
+          <div class="choices levels">
+            <label><input type="radio" name="level" value="5" checked><span>1–5</span></label>
+            <label><input type="radio" name="level" value="10"><span>1–10</span></label>
+            <label><input type="radio" name="level" value="12"><span>1–12</span></label>
+            <label><input type="radio" name="level" value="20"><span>1–20</span></label>
+          </div>
+        </fieldset>
+        <p id="setup-message" class="setup-message" role="status"></p>
+        <button id="start" class="start" type="submit" disabled>Even laden…</button>
+      </form>
+    </section>
+    <section id="play" class="play" aria-label="Speelveld" hidden>
+      <button id="rainbow" class="rainbow artwork-button" aria-label="Controleer het antwoord"><img class="rainbow-normal" src="assets/approved/rainbow.webp" alt="" draggable="false"><span class="rainbow-expression" aria-hidden="true"><img class="rainbow-sad" src="assets/approved/rainbow-sad.webp" alt="" draggable="false"></span><span class="rainbow-eye near" aria-hidden="true"><span class="pupil"></span></span><span class="rainbow-eye far" aria-hidden="true"><span class="pupil"></span></span></button>
+      <button id="thought" class="thought" type="button" aria-label="Beluister het getal"><span id="target"></span></button>
+      <div id="fish-layer" class="fish-layer"></div>
+      <img class="foreground" src="assets/approved/foreground.webp" alt="" draggable="false">
+      <span class="shell-shadow" aria-hidden="true"></span>
+      <button id="shell" class="shell artwork-button" aria-label="Voeg een visje toe">
+        <span class="shell-visual" aria-hidden="true">
+        <img class="shell-closed" src="assets/approved/shell-closed.webp" alt="" draggable="false">
+        <img class="shell-open" src="assets/approved/shell-open.webp" alt="" draggable="false">
+        </span>
+      </button>
+      <button id="home" class="ui-button home" aria-label="Terug naar instellingen"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m5 15 11-10 11 10M9 12v15h14V12M13 27v-9h6v9"/></svg></button>
+      <button id="speaker" class="ui-button speaker" aria-label="Beluister de opdracht opnieuw" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12h6l7-6v20l-7-6H5zM23 11q5 5 0 10M26 7q9 9 0 18"/></svg></button>
+    </section>
+  </main>
+</body>
+</html>
