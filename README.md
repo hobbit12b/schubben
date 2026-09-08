@@ -31,7 +31,7 @@ De ogen van de gele vis zijn wit met zwarte pupillen. De schubvlucht duurt 520 m
 
 Na een fout antwoord kijkt Regenboog kort sip en schudt hij rustig “nee”. Daarna keert het gewone gezicht terug en blijft dezelfde opdracht staan. Bij verminderde beweging verschijnt alleen het sippe gezicht.
 
-De sippe mond en wenkbrauwen liggen over het oorspronkelijke artwork, zodat het lichaam niet verspringt. De nee-beweging is klein en vloeiend. Na het landen van een schub duurt de pauze 60 ms; telspraak mag tijdens vertrek afklinken. Visjes draaien in 160 ms vloeiend door twee zijstanden voordat ze dalen. Bij niveau 1–10 zijn de visjes 10% kleiner. Een contactschaduw laat de losse schelp op de stenen rusten.
+De sippe mond en wenkbrauwen liggen over het oorspronkelijke artwork, zodat het lichaam niet verspringt. De nee-beweging is klein en vloeiend. Na het landen van een schub duurt de pauze 60 ms; telspraak mag tijdens vertrek afklinken. Visjes draaien in 260 ms vloeiend door twee zijstanden voordat ze dalen. Bij niveau 1–10 zijn de visjes 10% kleiner. Een contactschaduw laat de losse schelp op de stenen rusten.
 
 Na acht seconden zonder bediening krijgt de beschikbare schelp een zachte gloed. Een handeling stopt de aanwijzing; tijdens nakijken is deze uitgeschakeld. Visjes deinen heel licht op hun vaste plek. De schub landt op het lichaam, boven de zijvin. De volgende schub vliegt al terwijl de vorige vis vertrekt; de telwoorden blijven na elkaar klinken. Bij niveau 1–10 staan Regenboog en zijn gedachtewolk hoger.
 

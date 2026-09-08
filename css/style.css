@@ -19,6 +19,7 @@ button:focus-visible, input:focus-visible + span { outline: 3px solid #fff; outl
 .level-ten .thought { top: 4%; }
 .rainbow.happy { animation: happy .7s ease-in-out infinite alternate; filter: drop-shadow(0 0 12px #b7ffff); }
 .rainbow-normal, .rainbow-sad { position: absolute; inset: 0; }
+.rainbow-expression { position: absolute; inset: 0; pointer-events: none; -webkit-mask-image: url('../assets/approved/rainbow.webp'); mask-image: url('../assets/approved/rainbow.webp'); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 .rainbow-sad { opacity: 0; transition: opacity .18s ease; mask-image: radial-gradient(ellipse 9% 7.3% at 87% 63.5%, #000 88%, transparent 100%), radial-gradient(ellipse 4% 2.4% at 71% 41%, #000 85%, transparent 100%), radial-gradient(ellipse 2.8% 2.4% at 90% 41%, #000 85%, transparent 100%); }
 .rainbow.sad .rainbow-sad { opacity: 1; }
 .rainbow.sad { animation: shake-no 1.2s ease-in-out; }
@@ -29,7 +30,7 @@ button:focus-visible, input:focus-visible + span { outline: 3px solid #fff; outl
 .pupil::before, .pupil::after { content: ''; position: absolute; background: white; border-radius: 50%; }
 .pupil::before { width: 32%; height: 27%; left: 16%; top: 12%; }
 .pupil::after { width: 13%; height: 12%; right: 14%; top: 31%; }
-.thought { position: absolute; z-index: 5; left: 63%; top: 9%; width: 19%; height: 15%; border: max(2px, .4cqw) solid #b8e6f5; border-radius: 50%; display: grid; place-items: center; background: #fffef9; color: #12477e; font-weight: 800; font-size: 9cqw; line-height: 1; box-shadow: 0 3px 12px #03608a18; }
+.thought { position: absolute; z-index: 5; left: 67%; top: 9%; width: 19%; height: 15%; border: max(2px, .4cqw) solid #b8e6f5; border-radius: 50%; display: grid; place-items: center; background: #fffef9; color: #12477e; font-weight: 800; font-size: 9cqw; line-height: 1; box-shadow: 0 3px 12px #03608a18; }
 .thought::before, .thought::after { content: ""; position: absolute; border-radius: 50%; background: #fffef9; border: 2px solid #b8e6f5; }
 .thought::before { width: 15%; height: 25%; left: -8%; bottom: 9%; }
 .thought::after { width: 8%; height: 14%; left: -17%; bottom: -1%; }

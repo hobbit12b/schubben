@@ -255,7 +255,7 @@
         { transform: `scaleX(${direction}) rotate(70deg) scaleX(1)`, offset: .35 },
         { transform: `scaleX(${direction}) rotate(110deg) scaleX(1)`, offset: .7 },
         { transform: `scaleX(${direction}) rotate(180deg) scaleX(-1)`, offset: 1 }
-      ], { duration: 160, easing: 'ease-in-out' });
+      ], { duration: 260, easing: 'ease-in-out' });
       await turn.finished.catch(() => {});
     }
     if (!alive(session)) return;
