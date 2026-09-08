@@ -1,0 +1,5 @@
+De gele vis heeft op verzoek witte ogen met zwarte pupillen. Alleen het gele lichaam is uit de bewerkte atlas geëxporteerd; de andere vislagen blijven gelijk. De bronuitsnede staat in `fish-yellow-white-eyes.png`. Voer na de gewone visexport `node tools/export-fish-layers.cjs --white-eyes` uit.
+
+## Definitieve ImageGen-prompt
+
+Edit this sprite atlas with ONE tiny but crucial correction. The YELLOW fish at upper left still has a CYAN/BLUE CRESCENT directly below and left of its large black pupil in its nearer, larger eye. Repaint that entire cyan crescent SOLID WHITE matching the eyeball. The yellow fish must have ONLY black and white in BOTH eyes: pure black pupil, white eyeball, white reflections. No blue iris anywhere. This is not a request to whiten the fins; keep all fins and body colors unchanged. Preserve everything else, all other fish and tails, exact canvas dimensions, identical framing and positions. The specific remaining blue crescent in the large eye MUST disappear into white.

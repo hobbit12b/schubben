@@ -1,0 +1,7 @@
+# Vislagen
+
+Gemaakt met de ingebouwde ImageGen-tool. De atlas staat in `assets/reference/fish-layers.png`; `tools/export-fish-layers.cjs` verwijdert de neutrale productieachtergrond en exporteert acht transparante WebP-bestanden in `assets/approved/`.
+
+## Prompt
+
+Use case: precise-object-edit. Create a production sprite atlas for this children's fish game using the attached fish strip as style reference/edit target. Transparent background with real alpha. EXACT grid: 4 equal columns, 2 equal rows, canvas 1024x1024. Each cell 256x512. Top row: FOUR fish BODIES WITHOUT THEIR BOTTOM TAILS, colors left to right yellow, pink, turquoise, purple. Omit orange clownfish. Preserve round friendly faces, big shiny eyes looking upward-right, smiling, richly shaded colorful illustration style. Keep dorsal and side/pectoral fins attached to body. Fish body occupies cell coordinates x=40..240 y=95..330; tail attachment is centered at x=100,y=325. Remove ONLY the bottom fan-shaped caudal tail, cleanly round off the body there. Bottom row: ONLY the corresponding four isolated fan-shaped caudal TAILS matching colors, no bodies no eyes no side fins. In each bottom cell, tail root at x=100,y=325 and tail fan extending down to y=425, spanning x=45..145. Same local coordinates in both rows so overlaying equal cells assembles a seamless fish. Short rounded tail root overlaps body by 15 pixels. No text labels, grid lines, shadows on backdrop, checkerboard, or other objects. Four bodies and four tails total.
