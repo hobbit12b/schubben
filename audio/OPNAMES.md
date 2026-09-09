@@ -1,83 +1,19 @@
-# Opnamescript en geluidseffecten
+# Geluidsbestanden
 
-Dit is een voorstel voor echte stemopnames en geluidseffecten. Deze audio is nog niet opgenomen of ingebouwd; het spel gebruikt momenteel Nederlandse browser-spraak.
+Alle 45 aangeleverde stemopnames staan in `audio/voice/` en zijn gekoppeld aan het spel.
 
-## Voorgestelde geluidseffecten
+| Bestand | Gebruik |
+| --- | --- |
+| `01.mp3` t/m `20.mp3` | Getal aantikken; tellen tijdens controleren in de audiomodi |
+| `01geven.mp3` t/m `20geven.mp3` | Opdracht in de audiomodi en via de luidsprekerknop |
+| `uitleg.mp3` | Eenmalige beginuitleg na openen, in alle modi |
+| `druk op schelp.mp3` | Hulp bij de oplichtende schelp na acht seconden zonder bediening |
+| `goed geteld.mp3` | Beloning bij een goed antwoord in de audiomodi |
+| `nognietgenoegvisjesprobeernogeens.mp3` | Aanmoediging bij te weinig visjes |
+| `teveelvisjesprobeerhetnogeens.mp3` | Aanmoediging bij te veel visjes |
 
-| Moment | Geluid | Richtduur |
-| --- | --- | --- |
-| Een visje toevoegen met de schelp | Zacht, rond waterbelletje: “blup” | 0,15–0,25 s |
-| Een schub komt op het lichaam | Klein helder glinstergeluidje | 0,15–0,3 s |
-| Goed antwoord: de schelp opent | Twee of drie warme, oplopende tonen met een zachte parel-pling | 0,6–0,9 s |
-| Fout antwoord: Regenboog kijkt sip | Eén zacht, laag “boep”, zonder harde buzzer | 0,2–0,3 s |
+`audio/plop.mp3` klinkt bij toevoegen én handmatig weghalen. `audio/glitter.mp3` begint met de vlucht van een schub, alleen bij een goed antwoord.
 
-Optioneel: een heel zachte waterzwaai bij het wegzwemmen. Houd dit subtiel, want het klinkt vaak achter elkaar. Laat de gesproken telwoorden duidelijk boven de effecten uitkomen. De contactschaduw, het deinen en de aanwijzing bij inactiviteit hebben geen eigen geluid nodig.
+`audio/achtergrondmuziek.mp3` herhaalt zacht tijdens het spel (10%, tijdens een stemopname 4,5%). De muzieknoot schakelt alleen de muziek uit of aan; deze voorkeur blijft bewaard. Er staat geen tekst op de knop. Home stopt muziek, stem en effecten.
 
-## Manier van inspreken
-
-Spreek warm, duidelijk en natuurlijk. Houd hetzelfde stemvolume en dezelfde afstand tot de microfoon aan. Neem iedere onderstaande regel als apart bestand op, met ongeveer een halve seconde stilte ervoor en erna. Geef de getallen een rustig maar vlot tempo; trek ze niet lang uit. Neem op in een stille kamer zonder muziek. WAV is geschikt als bronbestand; de bestanden kunnen later voor het spel worden omgezet.
-
-## Beginuitleg
-
-- `intro.wav`: “Druk op Regenboog als er genoeg visjes in beeld staan.”
-- Optioneel, `schelp-hulp.wav`: “Druk op de schelp voor een visje.”
-
-## Losse getallen
-
-Deze opnames worden gebruikt voor het tellen én wanneer het kind op het cijfer tikt.
-
-- `getal-01.wav`: “één”
-- `getal-02.wav`: “twee”
-- `getal-03.wav`: “drie”
-- `getal-04.wav`: “vier”
-- `getal-05.wav`: “vijf”
-- `getal-06.wav`: “zes”
-- `getal-07.wav`: “zeven”
-- `getal-08.wav`: “acht”
-- `getal-09.wav`: “negen”
-- `getal-10.wav`: “tien”
-- `getal-11.wav`: “elf”
-- `getal-12.wav`: “twaalf”
-- `getal-13.wav`: “dertien”
-- `getal-14.wav`: “veertien”
-- `getal-15.wav`: “vijftien”
-- `getal-16.wav`: “zestien”
-- `getal-17.wav`: “zeventien”
-- `getal-18.wav`: “achttien”
-- `getal-19.wav`: “negentien”
-- `getal-20.wav`: “twintig”
-
-## Complete opdrachten
-
-Neem de hele zin op, zodat de opdracht natuurlijk klinkt.
-
-- `opdracht-01.wav`: “Regenboog wil aan één visje een schub geven.”
-- `opdracht-02.wav`: “Regenboog wil aan twee visjes een schub geven.”
-- `opdracht-03.wav`: “Regenboog wil aan drie visjes een schub geven.”
-- `opdracht-04.wav`: “Regenboog wil aan vier visjes een schub geven.”
-- `opdracht-05.wav`: “Regenboog wil aan vijf visjes een schub geven.”
-- `opdracht-06.wav`: “Regenboog wil aan zes visjes een schub geven.”
-- `opdracht-07.wav`: “Regenboog wil aan zeven visjes een schub geven.”
-- `opdracht-08.wav`: “Regenboog wil aan acht visjes een schub geven.”
-- `opdracht-09.wav`: “Regenboog wil aan negen visjes een schub geven.”
-- `opdracht-10.wav`: “Regenboog wil aan tien visjes een schub geven.”
-- `opdracht-11.wav`: “Regenboog wil aan elf visjes een schub geven.”
-- `opdracht-12.wav`: “Regenboog wil aan twaalf visjes een schub geven.”
-- `opdracht-13.wav`: “Regenboog wil aan dertien visjes een schub geven.”
-- `opdracht-14.wav`: “Regenboog wil aan veertien visjes een schub geven.”
-- `opdracht-15.wav`: “Regenboog wil aan vijftien visjes een schub geven.”
-- `opdracht-16.wav`: “Regenboog wil aan zestien visjes een schub geven.”
-- `opdracht-17.wav`: “Regenboog wil aan zeventien visjes een schub geven.”
-- `opdracht-18.wav`: “Regenboog wil aan achttien visjes een schub geven.”
-- `opdracht-19.wav`: “Regenboog wil aan negentien visjes een schub geven.”
-- `opdracht-20.wav`: “Regenboog wil aan twintig visjes een schub geven.”
-
-## Reacties
-
-- `goed.wav`: “Goed geteld!”
-- `te-weinig.wav`: “Dat waren nog niet genoeg visjes. Probeer het nog eens.”
-- `te-veel.wav`: “Dat waren te veel visjes. Probeer het nog eens.”
-
-Spreek de foutreacties vriendelijk en aanmoedigend in. De korte reacties vervangen in dit voorstel de huidige langere zin met twee wisselende aantallen; daarvoor hoeft geen grote verzameling aantalcombinaties te worden opgenomen.
-
-Totaal: **44 benodigde opnames**, plus één optionele schelpuitleg.
+Web Audio decodeert de korte bestanden vóór Start. Muziek wordt gestreamd. Bij openen als lokaal bestand gebruikt het spel native HTML-audio. De Nederlandse computerstem dient alleen als reserve bij een niet-afspeelbare stemopname.

@@ -11,4 +11,5 @@ De tests gebruiken Playwright met Microsoft Edge, met een speelveld van 1024 × 
 - De guidance-test controleert ook het sippe gezicht en de nee-beweging na een fout antwoord, dezelfde opdracht bij opnieuw proberen, herstel van het gewone gezicht en annulering via Home.
 - `node tests/tempo.cjs`: telwoorden van 900 ms klinken volledig en na elkaar, terwijl het visje al draait en vertrekt.
 
-Spraak wordt in de functionele tests gesimuleerd om tekst, taal en tempo te controleren. Het werkelijk hoorbare geluid en de Nederlandse systeemstem moeten op de gebruikte iPad worden beoordeeld. Er is geen fysieke iPad-test uitgevoerd.
+De functionele tests simuleren de reserve-computerstem om tekst, taal en tempo te controleren. `node tests/sounds.cjs` decodeert alle 45 echte stemopnames en beide effecten, controleert afspelen, koppelingen, muziekloop en laag volume, aan/uit en onthouden voorkeur, plop bij toevoegen/weghalen, fout antwoord zonder schub en langzaam vertrek, goed antwoord met glitter en beloning, Home en lokaal-bestandfallback. De klank en het volume moeten nog op de gebruikte fysieke iPad worden beoordeeld; er is geen fysieke iPad-test uitgevoerd.
+
