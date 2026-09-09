@@ -37,10 +37,16 @@ button:focus-visible, input:focus-visible + span { outline: 3px solid #fff; outl
 .fish-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
 .fish { position: absolute; width: var(--fish-width); aspect-ratio: 160 / 267; border: 0; padding: 0; background: transparent; pointer-events: auto; }
 .fish-body { display: block; position: absolute; inset: 0; transform: scaleX(var(--direction)); }
+.fish-turn-copy { display: block; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
 .fish-float { display: block; position: absolute; inset: 0; animation: sea-bob var(--bob-period) ease-in-out var(--bob-delay) infinite; }
 .fish.swimming .fish-float, .fish.receiving .fish-float { animation-play-state: paused; }
 .fish-art, .fish-tail { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fish-art { transition: opacity .2s ease; }
 .fish-tail { transform-origin: 50% 64%; animation: tail-swish var(--tail-period) ease-in-out var(--tail-delay) infinite; }
+.fish-sad-art { opacity: 0; transition: opacity .2s ease; }
+.fish.disappointed .fish-sad-art { opacity: 1; }
+.fish.disappointed .fish-art:not(.fish-sad-art) { opacity: 0; }
+.fish.disappointed .fish-tail { animation-duration: 3.5s; }
 .fish.departing .fish-body { transform: scaleX(var(--direction)) scaleY(-1); }
 .scale { position: absolute; width: 16%; height: 9%; left: 35%; top: 43%; border-radius: 65% 35% 65% 45%; background: linear-gradient(135deg, white 5%, #a4ffff 30%, #df9bff 65%, #fff8ac); border: 1px solid #fff; box-shadow: 0 0 5px 1px #cfffff; opacity: 0; }
 .has-scale .scale, .counting .scale { opacity: 1; animation: shimmer .5s ease-in-out infinite alternate; }
@@ -59,6 +65,10 @@ button:focus-visible, input:focus-visible + span { outline: 3px solid #fff; outl
 .ui-button svg { width: 48%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .ui-button:active { background: #0d7aaf; }
 .home { left: 3%; } .speaker { right: 3%; }
+.music { right: 3%; top: 17%; }
+.speaker[hidden] + .music { top: 3%; }
+.music[aria-pressed="true"] .music-slash { display: none; }
+.shell-plant { position: absolute; z-index: 31; width: 6%; height: auto; left: 54%; bottom: -1%; pointer-events: none; }
 .speaker.speaking { box-shadow: 0 0 0 5px #cfffff70; }
 .settings { position: absolute; inset: 0; z-index: 40; display: flex; align-items: center; padding: 5%; gap: 3%; background: linear-gradient(90deg, #086e9820, #044c7840); }
 .settings-art { width: 28%; flex-shrink: 0; filter: drop-shadow(0 12px 12px #00547d50); }

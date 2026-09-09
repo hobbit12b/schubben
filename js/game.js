@@ -2,11 +2,12 @@
 
 (() => {
   const $ = id => document.getElementById(id);
-  const ui = Object.fromEntries(['settings', 'settings-form', 'play', 'target', 'thought', 'fish-layer', 'rainbow', 'shell', 'home', 'speaker', 'start', 'setup-message'].map(id => [id, $(id)]));
+  const ui = Object.fromEntries(['settings', 'settings-form', 'play', 'target', 'thought', 'fish-layer', 'rainbow', 'shell', 'home', 'speaker', 'music', 'start', 'setup-message'].map(id => [id, $(id)]));
   const state = { mode: 'visual', max: 5, target: 1, fishStack: [], busy: false, deck: [], slots: [], session: 0, playing: false };
   const speechAvailable = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
   const pending = new Set();
   let stopSpeech = null;
+  let speechGeneration = 0;
   let pressTimer;
   let assetsReady = false;
   let gazeTimer;
@@ -15,7 +16,7 @@
   let gazeFrame;
   let gazeFish = null;
   let gazePoint = { x: .5, y: .75 };
-  const audioActive = () => state.mode !== 'visual' && speechAvailable;
+  const audioActive = () => state.mode !== 'visual';
   const alive = session => state.playing && state.session === session;
 
   // Slot direction is explicit, including the central slot in each row of five.
@@ -54,14 +55,27 @@
   }
 
   function cancelSpeech() {
+    speechGeneration++;
+    window.gameSounds.stopVoice();
     if (stopSpeech) stopSpeech();
     if (speechAvailable) window.speechSynthesis.cancel();
     ui.speaker.classList.remove('speaking');
   }
 
-  function speak(text, rate = .82, explicit = false) {
+  async function speak(text, rate = .82, explicit = false, recording) {
     cancelSpeech();
-    if (!speechAvailable || (!explicit && !audioActive())) return Promise.resolve();
+    if (!explicit && !audioActive()) return;
+    const session = state.session;
+    const generation = speechGeneration;
+    const key = recording || (/^\d+$/.test(text) ? text.padStart(2, '0') : text === instruction() ? `${String(state.target).padStart(2, '0')}geven` : text === 'Goed geteld!' ? 'goed geteld' : null);
+    if (key) {
+      ui.speaker.classList.add('speaking');
+      const played = await window.gameSounds.voice(key);
+      if (generation !== speechGeneration) return;
+      ui.speaker.classList.remove('speaking');
+      if (played || !alive(session)) return;
+    }
+    if (!speechAvailable) return;
     return new Promise(resolve => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'nl-NL';
@@ -98,7 +112,10 @@
     ui.shell.classList.remove('hint');
     if (!state.playing || state.busy || ui.shell.disabled) return;
     idleTimer = setTimeout(() => {
-      if (state.playing && !state.busy && !ui.shell.disabled) ui.shell.classList.add('hint');
+      if (state.playing && !state.busy && !ui.shell.disabled) {
+        ui.shell.classList.add('hint');
+        if (!ui.speaker.classList.contains('speaking')) void speak('Druk op de schelp.', .82, true, 'druk op schelp');
+      }
     }, 8000);
   }
 
@@ -141,7 +158,7 @@
   function syncControls() {
     ui.rainbow.disabled = state.busy;
     ui.speaker.disabled = state.busy;
-    ui.thought.disabled = state.busy || !speechAvailable;
+    ui.thought.disabled = state.busy;
     ui.shell.disabled = state.busy || state.fishStack.length >= state.max;
     for (const fish of state.fishStack) fish.el.disabled = state.busy;
     resetIdleHint();
@@ -173,7 +190,12 @@
     setupRound(false, false);
     if (!introPlayed) {
       introPlayed = true;
-      void speak(`Druk op Regenboog als er genoeg visjes in beeld staan.${audioActive() ? ' ' + instruction() : ''}`, .82, true);
+      const session = state.session;
+      const intro = speak('Druk op Regenboog als er genoeg visjes in beeld staan.', .82, true, 'uitleg');
+      const generation = speechGeneration;
+      void intro.then(() => {
+        if (generation === speechGeneration && alive(session) && !state.busy && !state.fishStack.length) void speak(instruction());
+      });
     } else void speak(instruction());
     updateGaze();
     scheduleIdleGaze();
@@ -208,13 +230,18 @@
     art.src = `assets/approved/fish-${color}-body.webp`;
     art.alt = '';
     art.draggable = false;
+    const sadArt = document.createElement('img');
+    sadArt.className = 'fish-art fish-sad-art';
+    sadArt.src = `assets/approved/fish-${color}-sad.webp`;
+    sadArt.alt = '';
+    sadArt.draggable = false;
     const tail = document.createElement('img');
     tail.className = 'fish-tail';
     tail.src = `assets/approved/fish-${color}-tail.webp`;
     tail.alt = '';
     tail.draggable = false;
     // The tail overlaps behind the rounded body at its fixed attachment point.
-    body.append(tail, art);
+    body.append(tail, art, sadArt);
     const scale = document.createElement('span');
     scale.className = 'scale';
     body.append(scale);
@@ -241,28 +268,39 @@
     syncControls();
   }
 
-  async function swimFishAway(fish, session) {
+  async function swimFishAway(fish, session, disappointed = false) {
     await fish.entering;
     if (!alive(session)) return;
     fish.el.classList.add('turning', 'swimming');
     fish.el.classList.remove('counting');
     fish.el.disabled = true;
+    let turn, mirroredTurn, turnCopy;
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const body = fish.el.querySelector('.fish-body');
       const direction = fish.slot.direction;
-      // Pass smoothly through two sideways poses without holding either frame.
-      const turn = body.animate([
-        { transform: `scaleX(${direction}) rotate(0deg) scaleX(1)`, offset: 0 },
-        { transform: `scaleX(${direction}) rotate(70deg) scaleX(1)`, offset: .35 },
-        { transform: `scaleX(${direction}) rotate(110deg) scaleX(1)`, offset: .7 },
-        { transform: `scaleX(${direction}) rotate(180deg) scaleX(-1)`, offset: 1 }
-      ], { duration: 260, easing: 'ease-in-out' });
+      // Never interpolate a scale from +1 to -1: its zero crossing hides the fish.
+      // Crossfade two full-width poses instead, preserving the final direction.
+      turnCopy = body.cloneNode(true);
+      turnCopy.className = 'fish-turn-copy';
+      turnCopy.setAttribute('aria-hidden', 'true');
+      body.parentElement.append(turnCopy);
+      const poses = [[0, 0], [70, .35], [110, .7], [180, 1]];
+      const timing = { duration: disappointed ? 480 : 260, easing: 'ease-in-out', fill: 'forwards' };
+      turn = body.animate(poses.map(([angle, offset]) => ({
+        transform: `scaleX(${direction}) rotate(${angle}deg)`, opacity: offset === 1 ? 0 : 1, offset
+      })), timing);
+      mirroredTurn = turnCopy.animate(poses.map(([angle, offset]) => ({
+        transform: `scaleX(${direction}) rotate(${angle}deg) scaleX(-1)`, opacity: offset === 1 ? 1 : 0, offset
+      })), timing);
       await turn.finished.catch(() => {});
     }
-    if (!alive(session)) return;
+    if (!alive(session)) { turnCopy?.remove(); return; }
     fish.el.classList.remove('turning');
     fish.el.classList.add('departing');
-    await move(fish, fish.slot.y, 108, 300);
+    turn?.cancel();
+    mirroredTurn?.cancel();
+    turnCopy?.remove();
+    await move(fish, fish.slot.y, 108, disappointed ? 1250 : 300);
     if (alive(session)) {
       fish.el.remove();
     }
@@ -270,6 +308,7 @@
 
   async function removeLastFish() {
     if (!state.playing || state.busy || !state.fishStack.length) return;
+    window.gameSounds.play('plop');
     const session = state.session;
     const fish = state.fishStack.pop();
     lookAtFish(fish);
@@ -309,7 +348,7 @@
     await previousWord;
     if (!alive(session)) return;
     fish.el.classList.add('counting');
-    const spoken = speak(String(count), .95);
+    const spoken = speak(String(count), .95, true);
     // Let speech finish during the turn/departure, without holding the fish still.
     await delay(60);
     return { spoken };
@@ -320,7 +359,7 @@
 
   async function showCorrectReward(session) {
     ui.rainbow.classList.add('happy');
-    await speak('Goed geteld!');
+    await speak('Goed geteld!', .82, true);
     if (!alive(session)) return;
     openShell();
     await delay(1100);
@@ -338,6 +377,31 @@
     const fishToCount = [...state.fishStack];
     const count = fishToCount.length;
     await Promise.all(fishToCount.map(fish => fish.entering));
+    if (!alive(session)) return;
+    const correct = count === state.target;
+    if (!correct) {
+      ui.rainbow.classList.add('sad');
+      for (const fish of fishToCount) fish.el.classList.add('disappointed');
+      await delay(450);
+      const departures = [];
+      for (let i = 0; i < count; i++) {
+        if (!alive(session)) return;
+        lookAtFish(fishToCount[i]);
+        const spoken = speak(String(i + 1), .95);
+        departures.push(swimFishAway(fishToCount[i], session, true));
+        await Promise.all([spoken, delay(220)]);
+      }
+      await Promise.all(departures);
+      if (!alive(session)) return;
+      state.fishStack = [];
+      await Promise.all([
+        speak(count < state.target ? 'Nog niet genoeg visjes. Probeer het nog eens.' : 'Te veel visjes. Probeer het nog eens.', .82, true,
+          count < state.target ? 'nognietgenoegvisjesprobeernogeens' : 'teveelvisjesprobeerhetnogeens'),
+        delay(1400)
+      ]);
+      if (alive(session)) setupRound(true);
+      return;
+    }
     const departures = [];
     let previousWord = Promise.resolve();
     for (let i = 0; i < count; i++) {
@@ -352,17 +416,8 @@
     if (!alive(session)) return;
     window.gameSounds.stop();
     state.fishStack = [];
-    const correct = count === state.target;
-    if (correct) await showCorrectReward(session);
-    else {
-      ui.rainbow.classList.add('sad');
-      await Promise.all([
-        speak(`Dit waren ${count} visjes. Regenboog wilde ${state.target} visjes. Probeer het nog eens.`),
-        delay(1400)
-      ]);
-      if (!alive(session)) return;
-    }
-    if (alive(session)) setupRound(!correct);
+    await showCorrectReward(session);
+    if (alive(session)) setupRound();
   }
 
   function goHome() {
@@ -370,6 +425,7 @@
     state.playing = false;
     cancelSpeech();
     window.gameSounds.stop();
+    window.gameSounds.stopMusic();
     for (const cancel of [...pending]) cancel();
     for (const animation of ui.play.getAnimations({ subtree: true })) animation.cancel();
     for (const scale of ui.play.querySelectorAll('.flying-scale')) scale.remove();
@@ -396,9 +452,18 @@
     if (ui.start.disabled) return;
     if (!assetsReady) { loadAssets(); return; }
     const form = new FormData(ui['settings-form']);
-    startGame(String(form.get('mode')), Number(form.get('level')));
     window.gameSounds.unlock();
+    startGame(String(form.get('mode')), Number(form.get('level')));
+    window.gameSounds.startMusic();
+    syncMusic();
   });
+  function syncMusic() {
+    const enabled = window.gameSounds.isMusicEnabled();
+    ui.music.setAttribute('aria-pressed', String(enabled));
+    ui.music.setAttribute('aria-label', enabled ? 'Achtergrondmuziek uitzetten' : 'Achtergrondmuziek aanzetten');
+  }
+  ui.music.addEventListener('click', () => { window.gameSounds.toggleMusic(); syncMusic(); });
+  syncMusic();
   ui.shell.addEventListener('click', addFish);
   ui.rainbow.addEventListener('click', checkAnswer);
   ui.home.addEventListener('click', goHome);
@@ -410,12 +475,8 @@
   ui.play.addEventListener('keydown', resetIdleHint);
   window.addEventListener('pagehide', goHome);
 
-  if (!speechAvailable) {
-    for (const input of document.querySelectorAll('input[name="mode"]')) input.disabled = input.value !== 'visual';
-    ui['setup-message'].textContent = 'Deze browser ondersteunt geen spraak. De visuele modus is beschikbaar.';
-  }
   const assets = ['background.webp', 'foreground.webp', 'rainbow.webp', 'rainbow-sad.webp', 'shell-closed.webp', 'shell-open.webp',
-    ...['yellow', 'turquoise', 'pink', 'purple'].flatMap(color => ['body', 'tail'].map(part => `fish-${color}-${part}.webp`))
+    'shell-plant.webp', ...['yellow', 'turquoise', 'pink', 'purple'].flatMap(color => ['body', 'tail', 'sad'].map(part => `fish-${color}-${part}.webp`))
   ].map(name => `assets/approved/${name}`);
   function loadAssets() {
     ui.start.disabled = true;
