@@ -21,7 +21,7 @@ De kleine visjes bestaan elk uit twee transparante afbeeldingen: een lichaam zon
 
 ## Aanbiedingsvormen
 
-Visueel toont het doelgetal; tikken op het getal spreekt alleen dat getal uit. Dit werkt ook met Enter of de spatiebalk. Auditief spreekt de opdracht zonder een zichtbaar getal. Visueel + auditief combineert beide. Alleen de twee audiomodi hebben gesproken telwoorden, feedback en een luidsprekerknop. Spraak gebruikt `speechSynthesis`, `nl-NL` en tempo `0.82`. De Nederlandse stem en geluidsuitvoer zijn afhankelijk van het apparaat. Zonder spraakondersteuning zijn de audiomodi uitgeschakeld met een melding op het instellingenscherm.
+Visueel toont het doelgetal; tikken op het getal spreekt alleen dat getal uit. Dit werkt ook met Enter of de spatiebalk. Auditief spreekt de opdracht zonder een zichtbaar getal. Visueel + auditief combineert beide. De twee audiomodi hebben gesproken telwoorden, opdrachten en een luidsprekerknop. Alle modi bieden gesproken beginuitleg, schelphulp en een vriendelijke foutreactie. De 45 aangeleverde MP3-opnames worden gebruikt; Nederlandse browser-spraak is alleen een reserve bij een niet-afspeelbare opname. Zie `audio/OPNAMES.md` voor alle koppelingen.
 
 ## Uitleg en animatie
 
@@ -44,3 +44,8 @@ Het corrupte ZIP-bestand wordt nergens geladen. Er is niets overgenomen uit een 
 Met Playwright beschikbaar en Microsoft Edge geïnstalleerd: `node tests/browser.cjs`. Gebruik zo nodig `NODE_PATH` om naar een bestaande Playwright-installatie te verwijzen. De tests starten zelf een tijdelijke lokale server en slaan screenshots en resultaten op in `tests/artifacts/`. Met een geïnstalleerde Playwright-WebKit kan dezelfde suite via de omgevingsvariabele `TEST_BROWSER=webkit` worden uitgevoerd.
 
 Zie `TESTING.md` voor de uitgevoerde controles en apparaatbeperkingen.
+
+Bij een fout antwoord krijgen visjes geen schub. Ze kijken sip, draaien in 480 ms en zwemmen in 1250 ms naar beneden; dezelfde opdracht blijft staan. Bij handmatig toevoegen en weghalen klinkt plop, bij een schubvlucht glitter. Achtergrondmuziek herhaalt zacht en heeft een aparte muzieknootknop zonder tekst, met onthouden aan/uit-keuze. Een klein los zeewierplantje staat voor de onderrand van de schelp. `js/audio.js` beheert de opnames, effecten en muziek.
+Bij een juist antwoord worden de visjes in alle modi met de eigen opnames hardop geteld. Tijdens de laatste draai vloeien twee volledig brede vislagen kort in elkaar over; er wordt nooit door nul breedte gespiegeld.
+Na het laatste telwoord klinkt in alle modi de opname `goed geteld.mp3`; daarna opent de schelp.
+Ook de overgang naar sippe gezichtjes laat de gewone vis geleidelijk verdwijnen terwijl de sippe versie verschijnt, zodat klikken op Regenboog geen leeg beeld geeft.

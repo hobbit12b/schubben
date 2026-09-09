@@ -22,6 +22,7 @@ const server = require('../server.cjs');
     });
     await page.goto(`http://127.0.0.1:${server.address().port}`);
     await page.waitForFunction(() => !document.getElementById('start').disabled);
+    await page.evaluate(() => { gameSounds.voice = async () => false; });
     await page.locator('input[value="both"]').check();
     await page.locator('#start').click();
     await page.evaluate(() => { document.getElementById('shell').click(); document.getElementById('shell').click(); });
@@ -34,3 +35,4 @@ const server = require('../server.cjs');
     console.log('PASS: fish turns while a long count word plays; both words finish in sequence without cancellation.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
+

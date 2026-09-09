@@ -24,6 +24,9 @@ const server = require('../server.cjs');
     await page.waitForTimeout(250);
     assert.ok(await page.locator('.rainbow-eye.near').evaluate(el => parseFloat(el.style.getPropertyValue('--gaze-x')) > 0), 'Gaze returns to departing last fish');
     await page.waitForFunction(() => !document.getElementById('rainbow').disabled);
+    const target = Number(await page.locator('#target').textContent());
+    while (await page.locator('.fish').count() > target) { await page.locator('.fish').first().tap(); await page.waitForFunction(() => !document.getElementById('rainbow').disabled); }
+    while (await page.locator('.fish').count() < target) await page.locator('#shell').tap();
     await page.locator('#rainbow').tap();
     await page.waitForFunction(() => !!document.querySelector('.flying-scale'));
     assert.equal(await page.locator('.flying-scale').count(), 1);
@@ -39,3 +42,4 @@ const server = require('../server.cjs');
     console.log('PASS: asset retry, newest/departing/idle gaze, single scale flight, home cancellation, no scrolling.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
+

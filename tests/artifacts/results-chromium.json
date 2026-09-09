@@ -6,17 +6,17 @@
   },
   {
     "mode": "visual",
-    "max": 10,
-    "passed": true
-  },
-  {
-    "mode": "visual",
     "max": 12,
     "passed": true
   },
   {
     "mode": "visual",
     "max": 20,
+    "passed": true
+  },
+  {
+    "mode": "visual",
+    "max": 10,
     "passed": true
   },
   {
@@ -46,12 +46,12 @@
   },
   {
     "mode": "both",
-    "max": 10,
+    "max": 12,
     "passed": true
   },
   {
     "mode": "both",
-    "max": 12,
+    "max": 10,
     "passed": true
   },
   {

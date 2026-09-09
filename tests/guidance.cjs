@@ -6,6 +6,8 @@ const server = require('../server.cjs');
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1024, height: 768 } });
+    // Keep the level-ten target above one so the overlap assertion has two fish.
+    await page.addInitScript(() => { Math.random = () => .5; });
     await page.addInitScript(() => {
       window.spoken = [];
       let timer;
@@ -18,6 +20,7 @@ const server = require('../server.cjs');
     });
     await page.goto(`http://127.0.0.1:${server.address().port}`);
     await page.waitForFunction(() => !document.getElementById('start').disabled);
+    await page.evaluate(() => { gameSounds.voice = async () => false; });
     await page.locator('#start').click();
     assert.deepEqual(await page.evaluate(() => spoken), ['Druk op Regenboog als er genoeg visjes in beeld staan.']);
     const normalTop = await page.locator('#rainbow').evaluate(el => el.getBoundingClientRect().top);
@@ -46,8 +49,9 @@ const server = require('../server.cjs');
     await page.waitForFunction(() => !document.getElementById('rainbow').disabled);
     await page.locator('#home').click();
     await page.locator('input[value="10"]').check();
+    await page.evaluate(() => { gameSounds.voice = async () => false; });
     await page.locator('#start').click();
-    assert.equal(await page.evaluate(() => spoken.length), 1, 'Intro only once per page opening');
+    assert.equal(await page.evaluate(() => spoken.filter(t => t.startsWith('Druk op Regenboog')).length), 1, 'Intro only once per page opening');
     assert.ok(await page.locator('#rainbow').evaluate(el => el.getBoundingClientRect().top) < normalTop - 25);
     assert.ok(await page.evaluate(() => {
       const thought = document.getElementById('thought');
@@ -55,7 +59,7 @@ const server = require('../server.cjs');
       return circleLeft > document.getElementById('rainbow').getBoundingClientRect().right;
     }), 'Even the smallest thought bubble starts beside the fish');
     const target = Number(await page.locator('#target').textContent());
-    const count = target === 1 ? 2 : target;
+    const count = target;
     await page.evaluate(n => { for (let i = 0; i < n; i++) document.getElementById('shell').click(); }, count);
     await page.waitForFunction(() => !document.querySelector('.swimming'));
     await page.locator('#rainbow').click();
@@ -67,6 +71,7 @@ const server = require('../server.cjs');
     await page.locator('#home').click();
     await page.waitForTimeout(450);
     assert.equal(await page.locator('.fish, .flying-scale').count(), 0);
+    await page.evaluate(() => { gameSounds.voice = async () => false; });
     await page.locator('#start').click();
     const visibleText = await page.locator('#play').innerText();
     assert.match(visibleText.trim(), /^\d+$/, 'The playfield contains only the target number, no written instructions');
@@ -86,9 +91,11 @@ const server = require('../server.cjs');
     await page.waitForFunction(() => document.getElementById('rainbow').classList.contains('sad'));
     assert.equal(await page.locator('#rainbow').evaluate(el => getComputedStyle(el).animationName), 'none');
     await page.locator('#home').click();
+    await page.evaluate(() => { gameSounds.voice = async () => false; });
     await page.locator('#start').click();
     assert.equal(await page.locator('#rainbow').evaluate(el => el.classList.contains('sad')), false);
     console.log('PASS: sad expression and no-shake on wrong answer, same target retry, normal expression restored, reduced motion and Home reset.');
     console.log('PASS: spoken intro once, idle hint/reset, subtle bob/reduced motion, level-10 spacing, overlapping departure/scale and Home cancellation, no playfield text.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
+

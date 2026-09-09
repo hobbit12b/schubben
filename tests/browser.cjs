@@ -37,9 +37,11 @@ async function run() {
     await page.goto(url);
     await page.locator('#start').waitFor({ state: 'visible' });
     await page.waitForFunction(() => !document.getElementById('start').disabled);
+    await page.evaluate(() => { gameSounds.voice = async () => false; });
     await page.locator(`input[value="${mode}"]`).check();
     await page.locator(`input[value="${max}"]`).check();
     await page.locator('#start').tap();
+    await page.waitForTimeout(100);
     return { page, errors };
   }
 
@@ -52,7 +54,7 @@ async function run() {
   async function levelCase(mode, max) {
     const { page, errors } = await pageFor(mode, max);
     const expected = max === 5 ? [1, 1, 1, -1, -1] : max === 10 ? [1, 1, 1, -1, -1, 1, 1, 1, -1, -1] : [...Array(5).fill(1), ...Array(5).fill(-1), ...(max === 12 ? [1, -1] : [...Array(5).fill(1), ...Array(5).fill(-1)])];
-    const target = await page.evaluate(() => Number(document.getElementById('target').textContent) || Number(window.spoken[0].text.match(/\d+/)[0]));
+    const target = await page.evaluate(() => Number(document.getElementById('target').textContent) || Number(window.spoken.find(u => /\d+/.test(u.text)).text.match(/\d+/)[0]));
     assert.equal(await page.locator('#speaker').isVisible(), mode !== 'visual');
     assert.equal(await page.locator('#thought').isVisible(), mode !== 'audio');
     if (mode === 'audio') assert.equal(await page.locator('#target').textContent(), '');
@@ -110,7 +112,7 @@ async function run() {
     await page.locator('#rainbow').tap();
     assert.equal(await page.locator('#thought').isDisabled(), true);
     await page.waitForFunction(() => !document.getElementById('rainbow').disabled);
-    if (mode !== 'visual') assert.ok(await page.evaluate(t => spoken.some(u => u.text === `Dit waren 0 visjes. Regenboog wilde ${t} visjes. Probeer het nog eens.`), currentTarget));
+    if (mode !== 'visual') assert.ok(await page.evaluate(t => spoken.some(u => u.text === 'Nog niet genoeg visjes. Probeer het nog eens.'), currentTarget));
     if (mode !== 'audio') assert.equal(Number(await page.locator('#target').textContent()), currentTarget);
     // A nonzero wrong answer still counts every fish sequentially.
     const wrongCount = currentTarget === max ? max - 1 : max;
@@ -129,12 +131,13 @@ async function run() {
     await page.locator('#rainbow').tap();
     await page.evaluate(() => { document.getElementById('shell').click(); document.getElementById('speaker').click(); });
     assert.equal(await page.locator('.fish').count(), wrongCount);
-    await page.waitForFunction(() => document.querySelectorAll('.flying-scale').length === 1);
+    await page.waitForFunction(() => !!document.querySelector('.disappointed'));
+    assert.equal(await page.locator('.flying-scale, .has-scale').count(), 0);
     assert.equal(await page.locator('.counting').count(), 0);
     await page.waitForFunction(() => !document.getElementById('rainbow').disabled, null, { timeout: 60000 });
     assert.equal(await page.locator('.fish').count(), 0);
-    assert.equal(await page.evaluate(() => maxCounting), 1);
-    assert.equal(await page.evaluate(() => countOrder.length), wrongCount);
+    assert.equal(await page.evaluate(() => maxCounting), 0);
+    assert.equal(await page.evaluate(() => countOrder.length), 0);
     await page.evaluate(() => countObserver.disconnect());
     if (mode !== 'audio') assert.equal(Number(await page.locator('#target').textContent()), currentTarget);
     await add(page, currentTarget);
@@ -145,7 +148,7 @@ async function run() {
     if (max === 20 && mode === 'both') await page.screenshot({ path: path.join(output, 'reward.png') });
     await page.waitForFunction(() => !document.getElementById('rainbow').disabled);
     assert.equal(await page.locator('#shell').evaluate(el => el.classList.contains('open')), false);
-    if (mode === 'visual') assert.deepEqual(await page.evaluate(() => spoken), []);
+    if (mode === 'visual') assert.deepEqual(await page.evaluate(() => spoken.filter(u => /^\d+$/.test(u.text)).map(u => Number(u.text))), Array.from({ length: currentTarget }, (_, i) => i + 1));
     else assert.ok(await page.evaluate(() => spoken.every(u => u.lang === 'nl-NL' && u.rate === (/^\d+$/.test(u.text) ? .95 : .82))));
     assert.equal(await page.evaluate(() => document.documentElement.scrollHeight > innerHeight || document.documentElement.scrollWidth > innerWidth), false);
     await add(page, max);
@@ -194,3 +197,5 @@ async function run() {
   }
 }
 run().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
+
+
