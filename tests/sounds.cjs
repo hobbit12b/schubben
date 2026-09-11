@@ -40,6 +40,30 @@ const server = require('../server.cjs');
     assert.ok(await page.evaluate(() => started >= 2), 'Recordings really play through Web Audio');
     assert.ok(await page.evaluate(() => media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).loop));
     await page.waitForFunction(() => !media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused);
+    assert.ok(await page.evaluate(() => !!document.fullscreenElement), 'Start enters fullscreen');
+    for (const [pauseEvent, resumeEvent] of [['blur', 'focus'], ['pagehide', 'pageshow']]) {
+      await page.evaluate(type => window.dispatchEvent(new Event(type)), pauseEvent);
+      assert.ok(await page.evaluate(() => media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused));
+      await page.evaluate(type => window.dispatchEvent(new Event(type)), resumeEvent);
+      await page.waitForFunction(() => !media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused);
+      assert.ok(await page.locator('#play').isVisible(), 'Returning keeps the game open');
+    }
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    assert.ok(await page.evaluate(() => media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused));
+    await page.evaluate(() => {
+      delete document.hidden;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.waitForFunction(() => !media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused);
+    await page.evaluate(() => window.dispatchEvent(new DeviceOrientationEvent('deviceorientation', { beta: 180, gamma: 0 })));
+    assert.ok(await page.evaluate(() => media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused));
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    assert.ok(await page.evaluate(() => media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused), 'Focus cannot override face-down pause');
+    await page.evaluate(() => window.dispatchEvent(new DeviceOrientationEvent('deviceorientation', { beta: 30, gamma: 0 })));
+    await page.waitForFunction(() => !media.find(a => a.src.endsWith('/achtergrondmuziek.mp3')).paused);
     assert.ok(await page.evaluate(() => gains[0].gain.value < .11), 'Music is quiet, including during speech');
     await page.locator('#music').click();
     assert.equal(await page.locator('#music').getAttribute('aria-pressed'), 'false');

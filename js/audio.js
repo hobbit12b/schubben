@@ -21,9 +21,42 @@
   const voiceAudio = new Audio('audio/voice/uitleg.mp3');
   let voiceGeneration = 0, useVoiceFallback = false;
   try { musicEnabled = localStorage.getItem('schubben-music') !== 'off'; } catch {}
+  let faceDown = false, pageAway = false, windowAway = false;
+  let orientationRequested = false;
+  const canPlayMusic = () => musicEnabled && musicActive && !document.hidden && !pageAway && !windowAway && !faceDown;
+  function syncMusicPlayback() {
+    if (!canPlayMusic()) { music.pause(); return; }
+    if (context && context.state !== 'running') void context.resume().catch(() => {});
+    if (music.paused) void music.play().then(() => {
+      if (!canPlayMusic()) music.pause();
+    }).catch(() => {});
+  }
+  function enableOrientation() {
+    const Orientation = window.DeviceOrientationEvent;
+    if (!Orientation || orientationRequested) return;
+    orientationRequested = true;
+    if (typeof Orientation.requestPermission === 'function') {
+      try { void Orientation.requestPermission().catch(() => {}); } catch {}
+    }
+  }
+  window.addEventListener('deviceorientation', event => {
+    if (!Number.isFinite(event.beta) || !Number.isFinite(event.gamma)) return;
+    const up = Math.cos(event.beta * Math.PI / 180) * Math.cos(event.gamma * Math.PI / 180);
+    // Hysteresis prevents repeated pause/resume when the tablet is tilted.
+    const next = faceDown ? up < -.35 : up < -.75;
+    if (next !== faceDown) { faceDown = next; syncMusicPlayback(); }
+  });
+  document.addEventListener('visibilitychange', syncMusicPlayback);
+  window.addEventListener('blur', () => { windowAway = true; syncMusicPlayback(); });
+  window.addEventListener('focus', () => { windowAway = false; syncMusicPlayback(); });
+  window.addEventListener('pagehide', () => { pageAway = true; syncMusicPlayback(); });
+  window.addEventListener('pageshow', () => { pageAway = false; windowAway = false; syncMusicPlayback(); });
+  // Retry within a gesture if Safari has interrupted audio while backgrounded.
+  document.addEventListener('pointerdown', syncMusicPlayback);
+  document.addEventListener('keydown', syncMusicPlayback);
   function startMusic() {
     musicActive = true;
-    if (musicEnabled) { unlock(); void music.play().catch(() => {}); }
+    syncMusicPlayback();
   }
   function stopMusic() { musicActive = false; music.pause(); }
   function toggleMusic() {
@@ -160,5 +193,5 @@
     }
   }
   function stop() { Object.values(effects).forEach(stopEffect); }
-  window.gameSounds = { preload, unlock, play, stop, voice, stopVoice, startMusic, stopMusic, toggleMusic, isMusicEnabled: () => musicEnabled };
+  window.gameSounds = { preload, unlock, play, stop, voice, stopVoice, startMusic, stopMusic, toggleMusic, enableOrientation, isMusicEnabled: () => musicEnabled };
 })();

@@ -453,6 +453,12 @@
     if (!assetsReady) { loadAssets(); return; }
     const form = new FormData(ui['settings-form']);
     window.gameSounds.unlock();
+    window.gameSounds.enableOrientation();
+    const root = document.documentElement;
+    const fullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
+    if (fullscreen && !document.fullscreenElement && !document.webkitFullscreenElement) {
+      try { Promise.resolve(fullscreen.call(root)).catch(() => {}); } catch {}
+    }
     startGame(String(form.get('mode')), Number(form.get('level')));
     window.gameSounds.startMusic();
     syncMusic();
@@ -473,7 +479,6 @@
   });
   ui.play.addEventListener('pointerdown', resetIdleHint);
   ui.play.addEventListener('keydown', resetIdleHint);
-  window.addEventListener('pagehide', goHome);
 
   const assets = ['background.webp', 'foreground.webp', 'rainbow.webp', 'rainbow-sad.webp', 'shell-closed.webp', 'shell-open.webp',
     'shell-plant.webp', ...['yellow', 'turquoise', 'pink', 'purple'].flatMap(color => ['body', 'tail', 'sad'].map(part => `fish-${color}-${part}.webp`))
