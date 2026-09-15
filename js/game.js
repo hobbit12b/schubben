@@ -469,12 +469,19 @@
     ui.music.setAttribute('aria-label', enabled ? 'Achtergrondmuziek uitzetten' : 'Achtergrondmuziek aanzetten');
   }
   ui.music.addEventListener('click', () => { window.gameSounds.toggleMusic(); syncMusic(); });
-  for (const input of ui['settings-form'].querySelectorAll('input[name="mode"]')) {
+  const modeExplanation = {
+    visual: 'Je ziet steeds het cijfer, maar het wordt niet gezegd.',
+    audio: 'Je hoort het cijfer, maar je ziet het niet.',
+    both: 'Je ziet het cijfer en je hoort het ook.'
+  };
+  for (const input of ui['settings-form'].querySelectorAll('input[name="mode"], input[name="level"]')) {
     input.addEventListener('click', () => {
-      cancelSpeech();
-      if (input.value === 'visual' || !assetsReady) return;
-      window.gameSounds.unlock();
-      void window.gameSounds.voice('03');
+      if (state.playing) return;
+      const explanation = input.name === 'mode'
+        ? modeExplanation[input.value]
+        : `Je oefent nu met cijfers van 1 tot en met ${input.value}.`;
+      // Speak directly inside the tap gesture, including repeated selections.
+      void speak(explanation, .82, true);
     });
   }
   syncMusic();

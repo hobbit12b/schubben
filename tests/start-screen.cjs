@@ -12,16 +12,27 @@ const fs = require('node:fs');
     await page.goto(`http://127.0.0.1:${server.address().port}`);
     await page.waitForFunction(() => !document.getElementById('start').disabled);
     await page.evaluate(() => {
-      window.previewVoices = [];
-      const voice = gameSounds.voice;
-      gameSounds.voice = name => { previewVoices.push(name); return voice(name); };
+      window.explanations = []; window.speechCancels = 0;
+      speechSynthesis.speak = utterance => explanations.push({ text: utterance.text, lang: utterance.lang, rate: Number(utterance.rate.toFixed(2)) });
+      speechSynthesis.cancel = () => { speechCancels++; };
     });
-    for (const mode of ['audio', 'both']) {
+    const expected = {
+      visual: 'Je ziet steeds het cijfer, maar het wordt niet gezegd.',
+      audio: 'Je hoort het cijfer, maar je ziet het niet.',
+      both: 'Je ziet het cijfer en je hoort het ook.'
+    };
+    for (const mode of ['visual', 'audio', 'both', 'both']) {
       await page.locator(`.mode-choice:has(input[value="${mode}"])`).tap();
-      assert.equal(await page.evaluate(() => previewVoices.at(-1)), '03', 'Listening choices demonstrate the spoken number');
+      assert.deepEqual(await page.evaluate(() => explanations.at(-1)), { text: expected[mode], lang: 'nl-NL', rate: .82 });
     }
+    assert.equal(await page.evaluate(() => explanations.length), 4, 'Tapping the same choice repeats its explanation');
+    for (const level of [5, 10, 12, 20]) {
+      await page.locator(`.levels label:has(input[value="${level}"])`).tap();
+      assert.equal(await page.evaluate(() => explanations.at(-1).text), `Je oefent nu met cijfers van 1 tot en met ${level}.`);
+    }
+    assert.equal(await page.evaluate(() => speechCancels), 8, 'Each selection interrupts the previous explanation');
+    await page.locator('.levels label:has(input[value="5"])').tap();
     await page.locator('.mode-choice:has(input[value="visual"])').tap();
-    assert.equal(await page.evaluate(() => previewVoices.length), 2, 'Seeing does not play the number');
     fs.mkdirSync('tests/artifacts', { recursive: true });
     await page.screenshot({ path: 'tests/artifacts/start-screen.png' });
     for (const viewport of [{ width: 1024, height: 768 }, { width: 820, height: 1180 }, { width: 1366, height: 768 }]) {
@@ -40,7 +51,9 @@ const fs = require('node:fs');
     await page.setViewportSize({ width: 1024, height: 768 });
     for (const mode of ['visual', 'audio', 'both']) {
       await page.locator(`.mode-choice:has(input[value="${mode}"])`).tap();
+      const cancellations = await page.evaluate(() => speechCancels);
       await page.locator('#start').tap();
+      assert.ok(await page.evaluate(() => speechCancels) > cancellations, 'Starting cancels the menu explanation');
       assert.ok(await page.locator('#play').isVisible());
       assert.equal(await page.locator('#thought').isVisible(), mode !== 'audio');
       assert.equal(await page.locator('#speaker').isVisible(), mode !== 'visual');
