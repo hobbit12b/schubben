@@ -16,19 +16,19 @@
   <main class="stage" aria-label="Schubben geven">
     <img class="background" src="assets/approved/background.webp" alt="" draggable="false">
     <section id="settings" class="settings" aria-labelledby="title">
-      <div class="settings-art"><img src="assets/approved/rainbow.webp" alt="Regenboog" draggable="false"></div>
       <form id="settings-form" class="settings-card">
-        <p class="eyebrow">GROEP 1–2 · RESULTATIEF TELLEN</p>
-        <h1 id="title">Schubben geven</h1>
-        <p class="intro">Help Regenboog zijn schubben te delen.</p>
-        <fieldset><legend>Aanbiedingsvorm</legend>
+        <header class="settings-welcome">
+          <img src="assets/approved/rainbow.webp" alt="Regenboog" draggable="false">
+          <h1 id="title" class="sr-only">Schubben geven</h1>
+        </header>
+<fieldset class="mode-fieldset"><legend class="sr-only">Spelvorm</legend>
           <div class="choices modes">
-            <label><input type="radio" name="mode" value="visual" checked><span>Visueel</span></label>
-            <label><input type="radio" name="mode" value="audio"><span>Auditief</span></label>
-            <label><input type="radio" name="mode" value="both"><span>Visueel + auditief</span></label>
+            <label class="mode-choice look"><input type="radio" name="mode" value="visual" checked aria-label="Het getal zien"><span class="mode-card"><span class="sense-icon eye-icon" aria-hidden="true"></span><span class="number-cloud" aria-hidden="true">3</span><i class="selection-check" aria-hidden="true">✓</i></span></label>
+            <label class="mode-choice listen"><input type="radio" name="mode" value="audio" aria-label="Het getal horen. Tik voor een voorbeeld."><span class="mode-card"><span class="sense-icon ear-icon" aria-hidden="true"></span><span class="sound-example" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 12h6l7-6v20l-7-6H5zM23 11q5 5 0 10M26 7q9 9 0 18"/></svg></span><i class="selection-check" aria-hidden="true">✓</i></span></label>
+            <label class="mode-choice together"><input type="radio" name="mode" value="both" aria-label="Het getal zien en horen. Tik voor een voorbeeld."><span class="mode-card"><span class="sense-pair" aria-hidden="true"><span class="sense-icon eye-icon"></span><span class="sense-icon ear-icon"></span></span><span class="number-cloud spoken-number" aria-hidden="true">3<svg viewBox="0 0 32 32"><path d="M10 11q5 5 0 10M15 7q9 9 0 18"/></svg></span><i class="selection-check" aria-hidden="true">✓</i></span></label>
           </div>
         </fieldset>
-        <fieldset><legend>Niveau</legend>
+        <fieldset class="level-fieldset"><legend class="sr-only">Niveau: tellen van 1 tot</legend>
           <div class="choices levels">
             <label><input type="radio" name="level" value="5" checked><span>1–5</span></label>
             <label><input type="radio" name="level" value="10"><span>1–10</span></label>
@@ -37,7 +37,7 @@
           </div>
         </fieldset>
         <p id="setup-message" class="setup-message" role="status"></p>
-        <button id="start" class="start" type="submit" disabled>Even laden…</button>
+        <button id="start" class="start" type="submit" aria-label="Spelen" disabled>Even laden…</button>
       </form>
     </section>
     <section id="play" class="play" aria-label="Speelveld" hidden>

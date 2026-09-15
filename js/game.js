@@ -469,6 +469,14 @@
     ui.music.setAttribute('aria-label', enabled ? 'Achtergrondmuziek uitzetten' : 'Achtergrondmuziek aanzetten');
   }
   ui.music.addEventListener('click', () => { window.gameSounds.toggleMusic(); syncMusic(); });
+  for (const input of ui['settings-form'].querySelectorAll('input[name="mode"]')) {
+    input.addEventListener('click', () => {
+      cancelSpeech();
+      if (input.value === 'visual' || !assetsReady) return;
+      window.gameSounds.unlock();
+      void window.gameSounds.voice('03');
+    });
+  }
   syncMusic();
   ui.shell.addEventListener('click', addFish);
   ui.rainbow.addEventListener('click', checkAnswer);
@@ -481,6 +489,7 @@
   ui.play.addEventListener('keydown', resetIdleHint);
 
   const assets = ['background.webp', 'foreground.webp', 'rainbow.webp', 'rainbow-sad.webp', 'shell-closed.webp', 'shell-open.webp',
+    'intro-eye-source.webp', 'intro-ear-complete.webp',
     'shell-plant.webp', ...['yellow', 'turquoise', 'pink', 'purple'].flatMap(color => ['body', 'tail', 'sad'].map(part => `fish-${color}-${part}.webp`))
   ].map(name => `assets/approved/${name}`);
   function loadAssets() {
